@@ -1,10 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { WeatherHeader } from '@/components/WeatherHeader';
 import { CurrentWeather } from '@/components/CurrentWeather';
 import { HourlyForecast } from '@/components/HourlyForecast';
 import { WeeklyForecast } from '@/components/WeeklyForecast';
 import { WeatherDetails } from '@/components/WeatherDetails';
+import { LocationPermissionModal } from '@/components/LocationPermissionModal';
+import { useLocation } from '@/hooks/useLocation';
 
 const Index = () => {
   const [currentWeather, setCurrentWeather] = useState({
@@ -19,6 +20,9 @@ const Index = () => {
   });
 
   const [isLoading, setIsLoading] = useState(true);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  
+  const { location, loading: locationLoading, error: locationError, getCurrentLocation } = useLocation();
 
   useEffect(() => {
     // Simulate loading with a more sophisticated animation
@@ -28,6 +32,38 @@ const Index = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Update weather location when user location is available
+  useEffect(() => {
+    if (location) {
+      setCurrentWeather(prev => ({
+        ...prev,
+        location: `${location.city}${location.country ? `, ${location.country}` : ''}`
+      }));
+      setShowLocationModal(false);
+      console.log('Location updated:', location);
+    }
+  }, [location]);
+
+  // Show error modal if location fails
+  useEffect(() => {
+    if (locationError) {
+      setShowLocationModal(true);
+    }
+  }, [locationError]);
+
+  const handleLocationRequest = () => {
+    if (locationLoading) return;
+    setShowLocationModal(true);
+  };
+
+  const handleAllowLocation = () => {
+    getCurrentLocation();
+  };
+
+  const handleCloseModal = () => {
+    setShowLocationModal(false);
+  };
 
   const getBackgroundGradient = (condition: string) => {
     switch (condition) {
@@ -112,7 +148,11 @@ const Index = () => {
 
       <div className="container mx-auto px-6 py-8 max-w-md relative z-10">
         <div className="space-y-8 animate-fade-in">
-          <WeatherHeader location={currentWeather.location} />
+          <WeatherHeader 
+            location={currentWeather.location}
+            onLocationRequest={handleLocationRequest}
+            isLoadingLocation={locationLoading}
+          />
           <CurrentWeather 
             temperature={currentWeather.temperature}
             condition={currentWeather.condition}
@@ -128,6 +168,13 @@ const Index = () => {
           />
         </div>
       </div>
+
+      <LocationPermissionModal
+        isOpen={showLocationModal}
+        onClose={handleCloseModal}
+        onAllow={handleAllowLocation}
+        error={locationError}
+      />
     </div>
   );
 };

@@ -89,7 +89,7 @@ export default {
 				'fade-in': {
 					'0%': {
 						opacity: '0',
-						transform: 'translateY(10px)'
+						transform: 'translateY(20px)'
 					},
 					'100%': {
 						opacity: '1',
@@ -98,7 +98,7 @@ export default {
 				},
 				'scale-in': {
 					'0%': {
-						transform: 'scale(0.95)',
+						transform: 'scale(0.9)',
 						opacity: '0'
 					},
 					'100%': {
@@ -115,14 +115,37 @@ export default {
 						transform: 'translateX(0)',
 						opacity: '1'
 					}
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-10px)' }
+				},
+				'glow': {
+					'0%, 100%': { 
+						boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)' 
+					},
+					'50%': { 
+						boxShadow: '0 0 30px rgba(255, 255, 255, 0.2)' 
+					}
+				},
+				'shimmer': {
+					'0%': { backgroundPosition: '-200% 0' },
+					'100%': { backgroundPosition: '200% 0' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'fade-in': 'fade-in 0.6s ease-out',
-				'scale-in': 'scale-in 0.4s ease-out',
-				'slide-in-right': 'slide-in-right 0.5s ease-out'
+				'fade-in': 'fade-in 0.8s ease-out',
+				'scale-in': 'scale-in 0.6s ease-out',
+				'slide-in-right': 'slide-in-right 0.7s ease-out',
+				'float': 'float 3s ease-in-out infinite',
+				'glow': 'glow 2s ease-in-out infinite',
+				'shimmer': 'shimmer 2s linear infinite'
+			},
+			backdropBlur: {
+				'xs': '2px',
+				'3xl': '64px'
 			}
 		}
 	},
@@ -131,7 +154,7 @@ export default {
 		function({ addUtilities }: any) {
 			const newUtilities = {
 				'.hover-scale': {
-					'@apply transition-transform duration-200 hover:scale-105': {}
+					'@apply transition-all duration-300 hover:scale-105 hover:shadow-lg': {}
 				},
 				'.scrollbar-hide': {
 					'-ms-overflow-style': 'none',
@@ -139,6 +162,12 @@ export default {
 					'&::-webkit-scrollbar': {
 						display: 'none'
 					}
+				},
+				'.glass-effect': {
+					'@apply bg-white/10 backdrop-blur-xl border border-white/20': {}
+				},
+				'.text-glow': {
+					'text-shadow': '0 0 10px rgba(255, 255, 255, 0.5)'
 				}
 			}
 			addUtilities(newUtilities)

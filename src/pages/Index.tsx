@@ -21,10 +21,10 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading
+    // Simulate loading with a more sophisticated animation
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -32,33 +32,86 @@ const Index = () => {
   const getBackgroundGradient = (condition: string) => {
     switch (condition) {
       case 'sunny':
-        return 'from-blue-400 via-blue-500 to-blue-600';
+        return 'from-blue-400 via-blue-500 to-purple-600';
       case 'cloudy':
-        return 'from-gray-400 via-gray-500 to-gray-600';
+        return 'from-gray-500 via-gray-600 to-gray-700';
       case 'rainy':
-        return 'from-slate-600 via-slate-700 to-slate-800';
+        return 'from-slate-600 via-slate-700 to-slate-900';
       case 'snowy':
-        return 'from-blue-200 via-blue-300 to-blue-400';
+        return 'from-blue-200 via-blue-400 to-indigo-500';
       default:
-        return 'from-blue-400 via-blue-500 to-blue-600';
+        return 'from-blue-400 via-blue-500 to-purple-600';
     }
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white text-lg font-medium">Loading weather data...</p>
+      <div className={`min-h-screen bg-gradient-to-br ${getBackgroundGradient(currentWeather.condition)} flex items-center justify-center relative overflow-hidden`}>
+        {/* Background particles */}
+        <div className="absolute inset-0">
+          {[...Array(20)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute bg-white/10 rounded-full animate-ping"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${Math.random() * 4 + 2}px`,
+                height: `${Math.random() * 4 + 2}px`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${Math.random() * 3 + 2}s`
+              }}
+            />
+          ))}
+        </div>
+        
+        <div className="text-center z-10">
+          <div className="relative mb-8">
+            <div className="w-20 h-20 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto"></div>
+            <div className="absolute inset-0 w-20 h-20 border-4 border-transparent border-r-white/50 rounded-full animate-spin mx-auto" style={{animationDirection: 'reverse', animationDuration: '1.5s'}}></div>
+          </div>
+          <div className="space-y-3">
+            <p className="text-white text-xl font-light tracking-wide">Loading weather data...</p>
+            <div className="flex justify-center space-x-1">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="w-2 h-2 bg-white rounded-full animate-bounce"
+                  style={{animationDelay: `${i * 0.2}s`}}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${getBackgroundGradient(currentWeather.condition)} transition-all duration-1000 ease-in-out`}>
-      <div className="container mx-auto px-4 py-6 max-w-md">
-        <div className="space-y-6 animate-fade-in">
+    <div className={`min-h-screen bg-gradient-to-br ${getBackgroundGradient(currentWeather.condition)} transition-all duration-1000 ease-in-out relative overflow-hidden`}>
+      {/* Background overlay */}
+      <div className="absolute inset-0 bg-black/10"></div>
+      
+      {/* Floating elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute bg-white/5 rounded-full animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: `${Math.random() * 100 + 50}px`,
+              height: `${Math.random() * 100 + 50}px`,
+              animationDuration: `${Math.random() * 4 + 3}s`,
+              animationDelay: `${Math.random() * 2}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="container mx-auto px-6 py-8 max-w-md relative z-10">
+        <div className="space-y-8 animate-fade-in">
           <WeatherHeader location={currentWeather.location} />
           <CurrentWeather 
             temperature={currentWeather.temperature}
